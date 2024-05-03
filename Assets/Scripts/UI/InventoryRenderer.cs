@@ -47,6 +47,8 @@ namespace Assets.Scripts.UI
         public Inventory Inventory => _inventory;
         public Vector2 CellSize => _cellSize;
 
+        public Action<ItemDefinition, PointerEventData.InputButton> ItemClickAction;
+
         private void OnValidate()
         {
             if (!_rectTransform)
@@ -148,11 +150,7 @@ namespace Assets.Scripts.UI
 
         public void SetInventory(Inventory inventory)
         {
-            OnDisable();
-
             _inventory = inventory;
-
-            OnEnable();
         }
 
         public void Toggle()
@@ -271,10 +269,16 @@ namespace Assets.Scripts.UI
             itemRenderer.gameObject.SetActive(true);
             itemRenderer.transform.SetAsLastSibling();
             itemRenderer.Setup(item, this);
+            itemRenderer.ItemClicked = OnItemClicked;
             itemRenderer.ItemPickedUp = OnItemPickedUp;
             itemRenderer.ItemReleased = OnItemReleased;
 
             return itemRenderer;
+        }
+
+        private void OnItemClicked(InventoryItemRenderer itemRenderer, PointerEventData.InputButton button)
+        {
+            ItemClickAction?.Invoke(itemRenderer.Item, button);
         }
 
         private void OnItemPickedUp(InventoryItemRenderer itemRenderer)

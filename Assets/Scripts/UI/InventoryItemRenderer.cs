@@ -13,7 +13,7 @@ namespace Assets.Scripts.UI
 {
     [RequireComponent(typeof(Image), typeof(RectTransform))]
     public class InventoryItemRenderer : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler,
-        IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
+        IPointerDownHandler, IPointerClickHandler
     {
         [SerializeField]
         private Image _image;
@@ -38,6 +38,7 @@ namespace Assets.Scripts.UI
             }
         }
 
+        public Action<InventoryItemRenderer, PointerEventData.InputButton> ItemClicked;
         public Action<InventoryItemRenderer> ItemPickedUp;
         public Action<InventoryItemRenderer> ItemReleased;
 
@@ -61,7 +62,8 @@ namespace Assets.Scripts.UI
                 _image = GetComponent<Image>();
 
             _image.sprite = item.Sprite;
-            _image.rectTransform.sizeDelta = new Vector2(_image.sprite.rect.width, _image.sprite.rect.height);
+            _image.rectTransform.sizeDelta = new Vector2(inventoryRenderer.CellSize.x * item.Width, inventoryRenderer.CellSize.y * item.Height) * 0.8f;
+            _image.preserveAspect = true;
             _image.type = Image.Type.Simple;
             _image.raycastTarget = true;
         }
@@ -175,14 +177,9 @@ namespace Assets.Scripts.UI
             
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
+        public void OnPointerClick(PointerEventData eventData)
         {
-            
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            
+            ItemClicked?.Invoke(this, eventData.button);
         }
     }
 }

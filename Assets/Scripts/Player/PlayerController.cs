@@ -154,6 +154,7 @@ namespace Assets.Scripts.Player
         }
 
 
+        public event Action<int> HealthChanged;
         public event CollisionDelegate Collision;
         public event DestructionEvent Destroyed;
 
@@ -169,11 +170,14 @@ namespace Assets.Scripts.Player
                 _input = GetComponent<PlayerInput>();
         }
 
+        private void Awake()
+        {
+            _health = _maxHealth;
+        }
+
         private void Start()
         {
             _rigidbody.useGravity = false;
-
-            _health = _maxHealth;
 
             _groundEvaluator.Initialize(this);
 
@@ -182,7 +186,6 @@ namespace Assets.Scripts.Player
                 actions[i].Initialize(this);
 
             _input.Player.Interact.Performed += OnInteract;
-            _input.Player.Inventory.Performed += OnInventory;
 
             _tags.AddTagChangedCallback(TagType.Grounded, OnGroundedChanged);
 
@@ -192,12 +195,6 @@ namespace Assets.Scripts.Player
         private void OnInteract()
         {
             _interactionTarget?.Interact(this);
-        }
-
-        private void OnInventory()
-        {
-            CanvasController.Instance.InventoryRenderer.SetInventory(_inventory);
-            CanvasController.Instance.InventoryRenderer.Toggle();
         }
 
         private void OnGroundedChanged(TagData data)
@@ -305,6 +302,13 @@ namespace Assets.Scripts.Player
             }
         }
 
+        public void ResetObject()
+        {
+            _health = _maxHealth;
+            _rigidbody.velocity = Vector3.zero;
+            _rigidbody.angularVelocity = Vector3.zero;
+        }
+
         public void AddAction(IAction action)
         {
             _actionContainer.AddAction(action);
@@ -345,6 +349,8 @@ namespace Assets.Scripts.Player
         public void Heal(int healAmount)
         {
             _health = Mathf.Min(_health + healAmount, _maxHealth);
+
+            HealthChanged?.Invoke(_health);
         }
 
         public void DealDamage(int damage, GameObject damageSource = null, Action onDestroyed = null)
@@ -353,6 +359,8 @@ namespace Assets.Scripts.Player
                 return;
 
             _health = Mathf.Max(_health - damage, 0);
+
+            HealthChanged?.Invoke(_health);
 
             if (_health <= 0)
             {
@@ -370,6 +378,8 @@ namespace Assets.Scripts.Player
                 return;
 
             _health = 0;
+
+            HealthChanged?.Invoke(_health);
 
             Destroyed?.Invoke(this);
         }

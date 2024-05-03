@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Assets.Scripts.Input
@@ -6,6 +7,9 @@ namespace Assets.Scripts.Input
     [Serializable]
     public class PlayerInputActions : MetroidvaniaInputActions.IPlayerActions
     {
+        [SerializeField, EnumFlags]
+        private GameManager.GameStates _activeStates = GameManager.GameStates.Level;
+
         private MetroidvaniaInputActions _inputActions;
 
         public Axis2DInputAction Movement;
@@ -18,12 +22,24 @@ namespace Assets.Scripts.Input
         public ButtonInputAction Interact;
         public ButtonInputAction Inventory;
 
+        private void OnGameStateChanged()
+        {
+            var gameState = GameManager.Instance.CurrentState;
+
+            if ((gameState & _activeStates) > 0)
+                Enable();
+            else
+                Disable();
+        }
+
         public void Initialize(MetroidvaniaInputActions inputActions)
         {
             _inputActions = inputActions;
             _inputActions.Player.AddCallbacks(this);
 
-            Enable();
+            GameManager.GameStateChanged += OnGameStateChanged;
+
+            OnGameStateChanged();
         }
 
         public void Dispose()
@@ -39,6 +55,8 @@ namespace Assets.Scripts.Input
             Inventory.Dispose();
 
             _inputActions?.Player.RemoveCallbacks(this);
+
+            GameManager.GameStateChanged -= OnGameStateChanged;
         }
 
         public void Enable()

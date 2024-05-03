@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff7bb1b92c27074297463bc1e9f99e7, type: 3}
+  m_Script: {fileID: 11500000, guid: 255f4fe1704e37e40873297a50bb9b42, type: 3}
   m_Name: Health Potion
   m_EditorClassIdentifier: 
   _id: health_potion_basic
@@ -19,3 +19,4 @@ MonoBehaviour:
   _prefab: {fileID: 4839134369848490646, guid: 13267f621f6712e4b98b858fc0c5db3d, type: 3}
   _size: {x: 1, y: 1}
   _canDrop: 1
+  _healthRestoreAmount: 3

@@ -6,57 +6,46 @@ using System.Text;
 using System.Threading.Tasks;
 using Trisibo;
 using UnityEngine;
-using UnityEngine.ProBuilder.Shapes;
 using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts.Core
 {
     public class LevelManager : MonoBehaviour
     {
-        [SerializeField]
-        private SceneField _defaultLevel;
-
         private List<LevelDoor> _doors = new List<LevelDoor>(5);
         private SceneField _currentLevel;
         private SceneField _nextLevel;
         private int _nextLocationId;
 
-        private void Start()
-        {
-            SceneManager.LoadScene(_defaultLevel.BuildIndex, LoadSceneMode.Single);
+        public event Action NextLevel;
+        public event Action NextLevelLoaded;
 
-            _currentLevel = _defaultLevel;
+        private void Awake()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
-        private void OnFadeInComplete()
+        private void OnDestroy()
         {
-            Debug.Log("Fade in complete");
-            
-            var asyncOp = SceneManager.LoadSceneAsync(_nextLevel.BuildIndex, LoadSceneMode.Single);
-
-            if (asyncOp != null)
-                OnLoadNextLevel(asyncOp);
-            else
-                asyncOp.completed += OnLoadNextLevel;
+            SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
-        private void OnFadeOutComplete()
+        private void OnSceneLoaded(Scene nextScene, LoadSceneMode loadArgs)
         {
-            Debug.Log("Fade out complete");
-            var player = GameManager.Instance.Player;
-            player.Input.Player.Enable();
-        }
-
-        private void OnLoadNextLevel(AsyncOperation operation)
-        {
-            Debug.Log("Next level loaded");
+            if (_currentLevel == null)
+            {
+                _currentLevel = _nextLevel;
+                _nextLevel = null;
+                _nextLocationId = 0;
+                return;
+            }
 
             LevelDoor targetDoor = null;
-            for (var i = 0; i< _doors.Count; i++)
+            for (var i = 0; i < _doors.Count; i++)
             {
                 var door = _doors[i];
 
-                if (door.NextLevel.BuildIndex == _nextLevel.BuildIndex && door.LocationId == _nextLocationId)
+                if (door.NextLevel.BuildIndex == _currentLevel.BuildIndex && door.LocationId == _nextLocationId)
                 {
                     targetDoor = door;
                     break;
@@ -78,11 +67,29 @@ namespace Assets.Scripts.Core
             _currentLevel = _nextLevel;
             _nextLevel = null;
             _nextLocationId = 0;
+        }
 
+        private void OnFadeInComplete()
+        {
+            var asyncOp = SceneManager.LoadSceneAsync(_nextLevel.BuildIndex, LoadSceneMode.Single);
+
+            if (asyncOp != null)
+                OnLoadNextLevel(asyncOp);
+            else
+                asyncOp.completed += OnLoadNextLevel;
+        }
+
+        private void OnFadeOutComplete()
+        {
+            NextLevelLoaded?.Invoke();
+        }
+
+        private void OnLoadNextLevel(AsyncOperation operation)
+        {         
             CanvasController.Instance.FadeInOut.FadeOut(OnFadeOutComplete);
         }
 
-        public void LoadNextLevel(SceneField nextScene, int locationId)
+        public void LoadNextLevel(SceneField nextScene, int locationId = -1)
         {
             if (_nextLevel != null)
                 return;
@@ -90,16 +97,13 @@ namespace Assets.Scripts.Core
             _nextLevel = nextScene;
             _nextLocationId = locationId;
 
-            var player = GameManager.Instance.Player;
-            player.Input.Player.Disable();
+            NextLevel?.Invoke();
 
             CanvasController.Instance.FadeInOut.FadeIn(OnFadeInComplete);
         }
 
         public void RegisterDoor(LevelDoor door)
         {
-            Debug.Log("Door registered");
-
             if (_doors.Contains(door))
                 return;
 
@@ -108,7 +112,6 @@ namespace Assets.Scripts.Core
 
         public void UnregisterDoor(LevelDoor door)
         {
-            Debug.Log("Door unregistered");
             if (!_doors.Contains(door))
                 return;
 

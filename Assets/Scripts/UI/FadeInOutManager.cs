@@ -26,6 +26,7 @@ namespace Assets.Scripts.UI
         private void Start()
         {
             _fadeGroup.alpha = 0f;
+            _fadeGroup.blocksRaycasts = false;
         }
 
         private void Update()
@@ -74,6 +75,7 @@ namespace Assets.Scripts.UI
             }
 
             _fadeTime = 0f;
+            _fadeGroup.blocksRaycasts = true;
             _onComplete = onComplete;
             _fadeUpdate = FadeInUpdate;
         }
@@ -87,6 +89,7 @@ namespace Assets.Scripts.UI
             }
 
             _fadeTime = 0f;
+            _fadeGroup.blocksRaycasts = false;
             _onComplete = onComplete;
             _fadeUpdate = FadeOutUpdate;
         }

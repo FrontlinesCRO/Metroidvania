@@ -1299,7 +1299,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 1
-  m_Constraints: 8
+  m_Constraints: 88
   m_CollisionDetection: 0
 --- !u!136 &1558045524582553191
 CapsuleCollider:
@@ -1308,7 +1308,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3862277631971027947}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 41832f8134be0a648ae28423433a1fc0, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1338,6 +1338,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _actionAsset: {fileID: -944628639613478452, guid: 4419d82f33d36e848b3ed5af4c8da37e,
     type: 3}
+  Player:
+    _activeStates: 4
 --- !u!114 &5273030091110881691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1355,7 +1357,7 @@ MonoBehaviour:
   _input: {fileID: 1691503254530681091}
   _cameraController: {fileID: 0}
   _inventory: {fileID: 3899823463671726348}
-  _gravity: {x: 0, y: -9.81, z: 0}
+  _gravity: {x: 0, y: -19.62, z: 0}
   _maxHealth: 10
   _actionContainer:
     _actions:
@@ -1386,8 +1388,8 @@ MonoBehaviour:
     _rotationSpringStrength: 100
     _rotationSpringDamper: 10
   _offset: 0.2
-  _spring: 10000
-  _damp: 1200
+  _spring: 20000
+  _damp: 2200
   _groundEvaluator:
     RaycastDistance: 5
     RaycastRadius: 0.2
@@ -1409,7 +1411,7 @@ MonoBehaviour:
     - rid: 1920048118906224640
       type: {class: JumpAction, ns: Assets.Scripts.Player.Actions, asm: Assembly-CSharp}
       data:
-        _jumpVelocity: 7
+        _jumpVelocity: 12
 --- !u!114 &6459764157115646117
 MonoBehaviour:
   m_ObjectHideFlags: 0

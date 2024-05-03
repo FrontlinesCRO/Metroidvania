@@ -13,12 +13,12 @@ namespace Assets.Scripts.UI
         public static CanvasController Instance => s_instance;
 
         [SerializeField]
-        private FadeInOutManager _fadeInOut;
+        private PlayerUI _playerUI;
         [SerializeField]
-        private InventoryRenderer _inventoryRenderer;
+        private FadeInOutManager _fadeInOut;
 
+        public PlayerUI PlayerUI => _playerUI;
         public FadeInOutManager FadeInOut => _fadeInOut;
-        public InventoryRenderer InventoryRenderer => _inventoryRenderer;
 
         private void Awake()
         {
@@ -31,6 +31,13 @@ namespace Assets.Scripts.UI
             DontDestroyOnLoad(gameObject);
 
             s_instance = this;
+        }
+
+        private void Start()
+        {
+            var player = GameManager.Instance.Player;
+
+            _playerUI.Initialize(player);
         }
     }
 }

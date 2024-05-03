@@ -9,7 +9,7 @@ namespace Assets.Scripts.Interfaces
 {
     public interface IUseable
     {
-        bool CanUse(PlayerController player, string response);
+        bool CanUse(PlayerController player, out string response);
         void Use(PlayerController player);
     }
 }

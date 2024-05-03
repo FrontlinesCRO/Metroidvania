@@ -9,12 +9,15 @@ using UnityEngine;
 
 namespace Assets.Scripts.Volumes
 {
+    [RequireComponent(typeof(Collider))]
     public class DamageTriggerVolume : MonoBehaviour
     {
         [SerializeField]
+        private Collider _triggerCollider;
+        [SerializeField]
         private int _damage = 1;
         [SerializeField]
-        private float _knockbackForce = 100f;
+        private Vector3 _knockbackForce = Vector3.up * 300f;
 
         private void DoDamage(Collider other)
         {
@@ -26,9 +29,8 @@ namespace Assets.Scripts.Volumes
             var otherRigidBody = other.attachedRigidbody;
             if (!otherRigidBody)
                 return;
-
-            var knockbackDirection = other.transform.position - transform.position;
-            otherRigidBody.AddForce(knockbackDirection.normalized * _knockbackForce, ForceMode.Impulse);
+            
+            otherRigidBody.AddForce(_knockbackForce, ForceMode.Impulse);
         }
 
         private void OnTriggerEnter(Collider other)
