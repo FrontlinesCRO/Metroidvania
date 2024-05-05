@@ -175,6 +175,12 @@ namespace Assets.Scripts.Player
             _health = _maxHealth;
         }
 
+        private void OnDestroy()
+        {
+            if (_cameraController)
+                Destroy(_cameraController.gameObject);
+        }
+
         private void Start()
         {
             _rigidbody.useGravity = false;

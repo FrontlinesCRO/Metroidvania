@@ -36,6 +36,9 @@ namespace Assets.Scripts.Player
 
         private void Start()
         {
+            if (transform.parent)
+                transform.SetParent(null, true);
+
             transform.position = _target.TransformPoint(_offset);
 
             _desiredSqrDistanceToTarget = (_target.position - transform.position).sqrMagnitude;

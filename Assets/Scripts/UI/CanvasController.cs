@@ -9,35 +9,22 @@ namespace Assets.Scripts.UI
 {
     public class CanvasController : MonoBehaviour
     {
-        private static CanvasController s_instance;
-        public static CanvasController Instance => s_instance;
-
         [SerializeField]
         private PlayerUI _playerUI;
         [SerializeField]
         private FadeInOutManager _fadeInOut;
 
+        private GameManager _gameManager;
+
         public PlayerUI PlayerUI => _playerUI;
         public FadeInOutManager FadeInOut => _fadeInOut;
 
-        private void Awake()
+        public void Initialize(GameManager gameManager)
         {
-            if (s_instance)
-            {
-                Destroy(gameObject);
-                return;
-            }
+            _gameManager = gameManager;
 
-            DontDestroyOnLoad(gameObject);
-
-            s_instance = this;
+            _playerUI.Initialize(gameManager.Player);
         }
 
-        private void Start()
-        {
-            var player = GameManager.Instance.Player;
-
-            _playerUI.Initialize(player);
-        }
     }
 }

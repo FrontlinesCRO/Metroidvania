@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Trisibo;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts
 {
@@ -41,14 +42,22 @@ namespace Assets.Scripts
             }
         }
 
+        [Header("Core Prefabs")]
         [SerializeField]
-        private SceneField _firstLevel;
+        private PlayerController _playerPrefab;
+        [SerializeField]
+        private CanvasController _canvasPrefab;
+
+        [Header("Active References")]
         [SerializeField]
         private PlayerController _player;
+        [SerializeField]
+        private CanvasController _canvas;
         [SerializeField]
         private LevelManager _levelManager;
 
         public PlayerController Player => _player;
+        public CanvasController Canvas => _canvas;
         public LevelManager LevelManager => _levelManager;
 
         public static event Action GameStateChanged;
@@ -57,6 +66,11 @@ namespace Assets.Scripts
         {
             if (s_instance)
             {
+                if (_player)
+                    Destroy(_player.gameObject);
+                if (_canvas)
+                    Destroy(_canvas.gameObject);
+
                 Destroy(gameObject);
                 return;
             }
@@ -68,11 +82,22 @@ namespace Assets.Scripts
 
         private void Start()
         {
+            if (!_player)
+                _player = Instantiate(_playerPrefab);
+            if (!_canvas)
+                _canvas = Instantiate(_canvasPrefab);
+
+            DontDestroyOnLoad(_player);
+            DontDestroyOnLoad(_canvas);
+
+            _canvas.Initialize(this);
+            _levelManager.Initialize();
+
             _player.Destroyed += OnPlayerDied;
             _levelManager.NextLevel += OnNextLevel;
             _levelManager.NextLevelLoaded += OnNextLevelLoaded;
 
-            _levelManager.LoadNextLevel(_firstLevel, -1);
+            CurrentState = SceneManager.GetActiveScene().buildIndex == 0 ? GameStates.MainMenu : GameStates.Level;
         }
 
         private void OnNextLevel()
@@ -96,7 +121,7 @@ namespace Assets.Scripts
             Player.ResetObject();
             Player.RigidBody.isKinematic = true;
 
-            CanvasController.Instance.FadeInOut.FadeOut(FinishReset);
+            GameManager.Instance.Canvas.FadeInOut.FadeOut(FinishReset);
         }
 
         private void FinishReset()
@@ -110,7 +135,7 @@ namespace Assets.Scripts
         {
             CurrentState = GameStates.GameOver;
 
-            CanvasController.Instance.FadeInOut.FadeIn(ResetLevel);
+            GameManager.Instance.Canvas.FadeInOut.FadeIn(ResetLevel);
         }
     }
 }

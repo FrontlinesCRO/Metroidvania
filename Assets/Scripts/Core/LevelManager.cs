@@ -13,28 +13,30 @@ namespace Assets.Scripts.Core
     public class LevelManager : MonoBehaviour
     {
         private List<LevelDoor> _doors = new List<LevelDoor>(5);
-        private SceneField _currentLevel;
+        private int _currentLevelIndex;
         private SceneField _nextLevel;
         private int _nextLocationId;
 
         public event Action NextLevel;
         public event Action NextLevelLoaded;
 
-        private void Awake()
+        public void Initialize()
         {
+            _currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
+
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
-        private void OnDestroy()
+        public void Dispose()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
         private void OnSceneLoaded(Scene nextScene, LoadSceneMode loadArgs)
         {
-            if (_currentLevel == null)
+            if (_currentLevelIndex < 0)
             {
-                _currentLevel = _nextLevel;
+                _currentLevelIndex = _nextLevel != null ? _nextLevel.BuildIndex : SceneManager.GetActiveScene().buildIndex;
                 _nextLevel = null;
                 _nextLocationId = 0;
                 return;
@@ -45,7 +47,7 @@ namespace Assets.Scripts.Core
             {
                 var door = _doors[i];
 
-                if (door.NextLevel.BuildIndex == _currentLevel.BuildIndex && door.LocationId == _nextLocationId)
+                if (door.NextLevel.BuildIndex == _currentLevelIndex && door.LocationId == _nextLocationId)
                 {
                     targetDoor = door;
                     break;
@@ -54,7 +56,7 @@ namespace Assets.Scripts.Core
 
             if (targetDoor == null)
             {
-                Debug.LogError("There is no door that links to the previous level in this level.");
+                Debug.LogWarning("There is no door that links to the previous level in this level.");
             }
             else
             {
@@ -64,7 +66,7 @@ namespace Assets.Scripts.Core
                 player.CameraController.PositionToTarget();
             }
 
-            _currentLevel = _nextLevel;
+            _currentLevelIndex = _nextLevel.BuildIndex;
             _nextLevel = null;
             _nextLocationId = 0;
         }
@@ -86,7 +88,7 @@ namespace Assets.Scripts.Core
 
         private void OnLoadNextLevel(AsyncOperation operation)
         {         
-            CanvasController.Instance.FadeInOut.FadeOut(OnFadeOutComplete);
+            GameManager.Instance.Canvas.FadeInOut.FadeOut(OnFadeOutComplete);
         }
 
         public void LoadNextLevel(SceneField nextScene, int locationId = -1)
@@ -99,7 +101,7 @@ namespace Assets.Scripts.Core
 
             NextLevel?.Invoke();
 
-            CanvasController.Instance.FadeInOut.FadeIn(OnFadeInComplete);
+            GameManager.Instance.Canvas.FadeInOut.FadeIn(OnFadeInComplete);
         }
 
         public void RegisterDoor(LevelDoor door)
