@@ -1,9 +1,5 @@
-﻿using Assets.Scripts.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Trisibo;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,6 +12,8 @@ namespace Assets.Scripts.Core
         private int _currentLevelIndex;
         private SceneField _nextLevel;
         private int _nextLocationId;
+
+        public int CurrentLevelIndex => _currentLevelIndex;
 
         public event Action NextLevel;
         public event Action NextLevelLoaded;

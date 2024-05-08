@@ -79,6 +79,9 @@ namespace Assets.Scripts.Player.States
         private Vector3 GetMovementVector()
         {
             var inputVector = Controller.Input.Player.Movement.Value;
+            if (inputVector.magnitude > 1f)
+                inputVector.Normalize();
+
             var cameraTransform = _camera.transform;
 
             var movementVector = cameraTransform.TransformDirection(new Vector3(inputVector.x, 0f, 0f));

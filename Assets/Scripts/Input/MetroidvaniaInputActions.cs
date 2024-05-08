@@ -109,6 +109,15 @@ namespace Assets.Scripts.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Map"",
+                    ""type"": ""Button"",
+                    ""id"": ""db05e076-22a2-4195-86af-b82a9c74c0c9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -397,6 +406,28 @@ namespace Assets.Scripts.Input
                     ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d4a20861-0372-4e27-b6f6-c90c4ad310af"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardMouse"",
+                    ""action"": ""Map"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""100a39fa-b6e2-4fe0-824d-8710b835cae0"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Map"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -452,6 +483,7 @@ namespace Assets.Scripts.Input
             m_Player_Guard = m_Player.FindAction("Guard", throwIfNotFound: true);
             m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
             m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
+            m_Player_Map = m_Player.FindAction("Map", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -522,6 +554,7 @@ namespace Assets.Scripts.Input
         private readonly InputAction m_Player_Guard;
         private readonly InputAction m_Player_Interact;
         private readonly InputAction m_Player_Inventory;
+        private readonly InputAction m_Player_Map;
         public struct PlayerActions
         {
             private @MetroidvaniaInputActions m_Wrapper;
@@ -535,6 +568,7 @@ namespace Assets.Scripts.Input
             public InputAction @Guard => m_Wrapper.m_Player_Guard;
             public InputAction @Interact => m_Wrapper.m_Player_Interact;
             public InputAction @Inventory => m_Wrapper.m_Player_Inventory;
+            public InputAction @Map => m_Wrapper.m_Player_Map;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -571,6 +605,9 @@ namespace Assets.Scripts.Input
                 @Inventory.started += instance.OnInventory;
                 @Inventory.performed += instance.OnInventory;
                 @Inventory.canceled += instance.OnInventory;
+                @Map.started += instance.OnMap;
+                @Map.performed += instance.OnMap;
+                @Map.canceled += instance.OnMap;
             }
 
             private void UnregisterCallbacks(IPlayerActions instance)
@@ -602,6 +639,9 @@ namespace Assets.Scripts.Input
                 @Inventory.started -= instance.OnInventory;
                 @Inventory.performed -= instance.OnInventory;
                 @Inventory.canceled -= instance.OnInventory;
+                @Map.started -= instance.OnMap;
+                @Map.performed -= instance.OnMap;
+                @Map.canceled -= instance.OnMap;
             }
 
             public void RemoveCallbacks(IPlayerActions instance)
@@ -648,6 +688,7 @@ namespace Assets.Scripts.Input
             void OnGuard(InputAction.CallbackContext context);
             void OnInteract(InputAction.CallbackContext context);
             void OnInventory(InputAction.CallbackContext context);
+            void OnMap(InputAction.CallbackContext context);
         }
     }
 }

@@ -1,5 +1,5 @@
 {
-    "name": "MetroidvaniaInputActionAssets",
+    "name": "MetroidvaniaInputActionAsset",
     "maps": [
         {
             "name": "Player",
@@ -81,6 +81,15 @@
                     "name": "Inventory",
                     "type": "Button",
                     "id": "6f538e7c-cba8-412e-bad7-b985be7731cc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Map",
+                    "type": "Button",
+                    "id": "db05e076-22a2-4195-86af-b82a9c74c0c9",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -371,6 +380,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d4a20861-0372-4e27-b6f6-c90c4ad310af",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Map",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "100a39fa-b6e2-4fe0-824d-8710b835cae0",
+                    "path": "<Gamepad>/dpad/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Map",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

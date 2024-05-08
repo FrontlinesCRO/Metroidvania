@@ -21,6 +21,8 @@ namespace Assets.Scripts.UI
         private TMPro.TMP_Text _healthText;
         [SerializeField]
         private InventoryRenderer _inventoryRenderer;
+        [SerializeField]
+        private GameObject _map;
 
         private PlayerController _player;
 
@@ -36,12 +38,16 @@ namespace Assets.Scripts.UI
             _inventoryRenderer.SetInventory(_player.Inventory);
             _inventoryRenderer.ItemClickAction = UseItem;
 
+            // map
+            _map.SetActive(false);
+
             UpdateHealthBar(_player.Health);
 
             if (_player)
             {
                 _player.HealthChanged += UpdateHealthBar;
                 _player.Input.Player.Inventory.Performed += ToggleInventory;
+                _player.Input.Player.Map.Performed += ToggleMap;
             }
         }
 
@@ -55,6 +61,14 @@ namespace Assets.Scripts.UI
         private void ToggleInventory()
         {
             _inventoryRenderer.Toggle();
+        }
+
+        private void ToggleMap()
+        {
+            var isActive = !_map.activeSelf;
+
+            _player.CameraController.ToggleMapCamera(isActive);
+            _map.SetActive(isActive);
         }
 
         private void UseItem(ItemDefinition item, PointerEventData.InputButton button)

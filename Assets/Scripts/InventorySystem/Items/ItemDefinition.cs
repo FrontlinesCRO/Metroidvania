@@ -1,5 +1,4 @@
-﻿using FarrokhGames.Inventory;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.InventorySystem.Items
 {

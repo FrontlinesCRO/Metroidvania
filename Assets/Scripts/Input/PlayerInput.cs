@@ -178,6 +178,7 @@ namespace Assets.Scripts.Input
             m_Player_Guard = m_Player.FindAction("Guard", throwIfNotFound: true);
             m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
             m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
+            m_Player_Map = m_Player.FindAction("Map", throwIfNotFound: true);
         }
     }
 }

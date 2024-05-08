@@ -1,18 +1,12 @@
 ﻿using Assets.Scripts.InventorySystem;
 using Assets.Scripts.InventorySystem.Items;
-using FarrokhGames.Shared;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Pool;
 using UnityEngine.UI;
-using static FarrokhGames.Inventory.InventoryDraggedItem;
-using static UnityEditor.Progress;
 
 namespace Assets.Scripts.UI
 {
@@ -37,8 +31,8 @@ namespace Assets.Scripts.UI
         private Inventory _inventory;
         private bool _haveListeners;
         private bool _amDraggingItem;
-        private Pool<Image> _imagePool;
-        private Pool<InventoryItemRenderer> _itemRendererPool;
+        private ObjectPool<Image> _imagePool;
+        private ObjectPool<InventoryItemRenderer> _itemRendererPool;
         private Image[] _grids;
         private Dictionary<ItemDefinition, InventoryItemRenderer> _items = new Dictionary<ItemDefinition, InventoryItemRenderer>();
 
@@ -88,8 +82,7 @@ namespace Assets.Scripts.UI
             imageContainer.transform.localScale = Vector3.one;
 
             // Create pool of images
-            _imagePool = new Pool<Image>(
-                delegate
+            _imagePool = new ObjectPool<Image>(() =>
                 {
                     var image = new GameObject("Image").AddComponent<Image>();
                     image.transform.SetParent(imageContainer);
@@ -98,8 +91,7 @@ namespace Assets.Scripts.UI
                 });
 
             // Create pool of item renderers
-            _itemRendererPool = new Pool<InventoryItemRenderer>(
-                delegate
+            _itemRendererPool = new ObjectPool<InventoryItemRenderer>(() =>
                 {
                     var itemRendererImage = new GameObject("Item Renderer").AddComponent<Image>();
                     var itemRenderer = itemRendererImage.AddComponent<InventoryItemRenderer>();
@@ -253,7 +245,7 @@ namespace Assets.Scripts.UI
 
         private Image CreateImage(Sprite sprite, bool raycastTarget)
         {
-            var img = _imagePool.Take();
+            var img = _imagePool.Get();
             img.gameObject.SetActive(true);
             img.sprite = sprite;
             img.rectTransform.sizeDelta = new Vector2(img.sprite.rect.width, img.sprite.rect.height);
@@ -265,7 +257,7 @@ namespace Assets.Scripts.UI
 
         private InventoryItemRenderer CreateItemRenderer(ItemDefinition item, bool raycastTarget)
         {
-            var itemRenderer = _itemRendererPool.Take();
+            var itemRenderer = _itemRendererPool.Get();
             itemRenderer.gameObject.SetActive(true);
             itemRenderer.transform.SetAsLastSibling();
             itemRenderer.Setup(item, this);
@@ -298,7 +290,7 @@ namespace Assets.Scripts.UI
             image.gameObject.name = "Image";
             image.gameObject.SetActive(false);
 
-            _imagePool.Recycle(image);
+            _imagePool.Release(image);
         }
 
         private void RecycleItemRenderer(InventoryItemRenderer itemRenderer)
@@ -308,7 +300,7 @@ namespace Assets.Scripts.UI
             itemRenderer.ItemPickedUp = null;
             itemRenderer.ItemReleased = null;
 
-            _itemRendererPool.Recycle(itemRenderer);
+            _itemRendererPool.Release(itemRenderer);
         }
 
         /// <summary>

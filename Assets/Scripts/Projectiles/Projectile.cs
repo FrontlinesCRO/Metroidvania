@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace Assets.Scripts.Projectiles
 {
@@ -22,6 +23,8 @@ namespace Assets.Scripts.Projectiles
         private GameObject _source;
 
         public Rigidbody RigidBody => _rigidBody;
+
+        public event Action Expired;
 
         private void Awake()
         {
@@ -46,6 +49,8 @@ namespace Assets.Scripts.Projectiles
                 return;
 
             gameObject.SetActive(false);
+
+            Expired?.Invoke();
         }
 
         public void Launch(Vector3 velocity, int damage, GameObject source)
@@ -64,6 +69,8 @@ namespace Assets.Scripts.Projectiles
             destructible.DealDamage(_damage, _source);
 
             gameObject.SetActive(false);
+
+            Expired?.Invoke();
         }
 
         private void OnCollisionEnter(Collision collision)

@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Projectiles;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace Assets.Scripts.Weapons
 {
@@ -20,6 +21,36 @@ namespace Assets.Scripts.Weapons
 
         private float _fireTime;
         private bool _fireing;
+        private ObjectPool<Projectile> _projectilePool;
+
+        private void Awake()
+        {
+            _projectilePool = new ObjectPool<Projectile>(CreateProjectile, OnTakeFromPool, OnReturnToPool, OnDestroyPoolObject, false, 10);
+        }
+
+        private Projectile CreateProjectile()
+        {
+            var projectile = Instantiate(_projectilePrefab, _firePoint.position, _firePoint.rotation);
+            projectile.Expired += () => _projectilePool.Release(projectile);
+            return projectile;
+        }
+
+        private void OnTakeFromPool(Projectile projectile)
+        {
+            projectile.transform.position = _firePoint.position;
+            projectile.transform.rotation = _firePoint.rotation;
+            projectile.gameObject.SetActive(true);
+        }
+
+        private void OnReturnToPool(Projectile projectile)
+        {
+            projectile.gameObject.SetActive(false);
+        }
+
+        private void OnDestroyPoolObject(Projectile projectile)
+        {
+            Destroy(projectile.gameObject);
+        }
 
         public void Update()
         {
@@ -42,7 +73,7 @@ namespace Assets.Scripts.Weapons
 
             _fireTime = 1f / _rateOfFire;
 
-            var projectile = Instantiate(_projectilePrefab, _firePoint.position, _firePoint.rotation);
+            var projectile = _projectilePool.Get();
             projectile.Launch(_firePoint.forward * _fireVelocity, _damage, gameObject);
 
             _fireing = true;

@@ -313,6 +313,8 @@ namespace Assets.Scripts.Player
             _health = _maxHealth;
             _rigidbody.velocity = Vector3.zero;
             _rigidbody.angularVelocity = Vector3.zero;
+
+            HealthChanged?.Invoke(_health);
         }
 
         public void AddAction(IAction action)

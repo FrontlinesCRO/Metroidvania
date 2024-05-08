@@ -21,6 +21,11 @@ namespace Assets.Scripts.Player
         private float _maxSpeed = 30f;
         [SerializeField]
         private bool _setCurrentOffsetFromTargetAsOffset;
+        [Header("Map Camera")]
+        [SerializeField]
+        private Camera _mapCamera;
+        [SerializeField]
+        private float[] _mapSizes;
 
         private float _desiredSqrDistanceToTarget;
         private Vector3 _velocity = Vector3.zero;
@@ -42,6 +47,16 @@ namespace Assets.Scripts.Player
             transform.position = _target.TransformPoint(_offset);
 
             _desiredSqrDistanceToTarget = (_target.position - transform.position).sqrMagnitude;
+
+            GameManager.Instance.LevelManager.NextLevelLoaded += () =>
+            {
+                var index = GameManager.Instance.LevelManager.CurrentLevelIndex;
+
+                if (index < 0 || index >= _mapSizes.Length)
+                    return;
+
+                _mapCamera.orthographicSize = _mapSizes[index];
+            };
         }
 
         private void LateUpdate()
@@ -60,6 +75,11 @@ namespace Assets.Scripts.Player
         public void PositionToTarget()
         {
             transform.position = _target.TransformPoint(_offset);
+        }
+
+        public void ToggleMapCamera(bool active)
+        {
+            _mapCamera.gameObject.SetActive(active);
         }
     }
 }

@@ -21,6 +21,7 @@ namespace Assets.Scripts.Input
         public ButtonInputAction Guard;
         public ButtonInputAction Interact;
         public ButtonInputAction Inventory;
+        public ButtonInputAction Map;
 
         private void OnGameStateChanged()
         {
@@ -53,6 +54,7 @@ namespace Assets.Scripts.Input
             Guard.Dispose();
             Interact.Dispose();
             Inventory.Dispose();
+            Map.Dispose();
 
             _inputActions?.Player.RemoveCallbacks(this);
 
@@ -70,6 +72,7 @@ namespace Assets.Scripts.Input
             Guard.Enable();
             Interact.Enable();
             Inventory.Enable();
+            Map.Enable();
 
             _inputActions.Player.Enable();
         }
@@ -85,6 +88,7 @@ namespace Assets.Scripts.Input
             Guard.Disable();
             Interact.Disable();
             Inventory.Disable();
+            Map.Disable();
 
             _inputActions.Player.Disable();
         }
@@ -132,6 +136,11 @@ namespace Assets.Scripts.Input
         public void OnInventory(InputAction.CallbackContext context)
         {
             Inventory.Update(context);
+        }
+
+        public void OnMap(InputAction.CallbackContext context)
+        {
+            Map.Update(context);
         }
     }
 }
